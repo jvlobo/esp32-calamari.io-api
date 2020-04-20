@@ -1,0 +1,8 @@
+#define WifiSSID "WifiSSID"
+#define WiFiPassword "WiFiPassword"
+
+#define CalamariAPIBase "https://company.calamari.io/api/"
+#define CalamariUser "calamari"
+#define CalamariPassword "password"
+
+#define employeeEmail "employee@email.com"
