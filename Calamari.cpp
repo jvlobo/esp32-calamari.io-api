@@ -10,40 +10,63 @@
 #include "Calamari.h"
 #include "helpers.h"
 
-Calamari::Calamari(String baseUrl, String user, String password) {
+Calamari::Calamari(String baseUrl, String user, String password, String employee) {
   _baseUrl.concat(baseUrl);
   _user.concat(user);
   _password.concat(password);
+  _employee.concat(employee);
 }
 
-String Calamari::getBaseURL() {
-  return _baseUrl;
+void Calamari::startShift() {
+  Calamari::_toggleShift("in");
 }
 
-void Calamari::startShift(String email) {
-  Calamari::_toggleShift(email, "in");
+void Calamari::stopShift() {
+  Calamari::_toggleShift("out");
 }
 
-void Calamari::stopShift(String email) {
-  Calamari::_toggleShift(email, "out");
-}
-
-void Calamari::_toggleShift(String email, String type) {
+void Calamari::_toggleShift(String type) {
   String endpoint = "clockin/terminal/v1/clock-" + type;
-  String payload = "{\"person\": \"" + email + "\", \"time\": \"" + Helper::getCurrentTime() + "\"}";
+  String payload = "{\"person\": \"" + Calamari::_employee  
+    + "\", \"time\": \"" + Helper::getCurrentTime() + "\"}";
 
   Calamari::_apiCall(endpoint, payload);
 }
 
-bool Calamari::shiftIsOn(String email) {
+bool Calamari::shiftIsOn() {
+  return Calamari::_getShiftStatus() == "STARTED";
+}
+
+void Calamari::startLunchBreak() {
+  Calamari::_toggleBreak("start", "2");
+}
+
+void Calamari::stopLunchBreak() {
+  Calamari::_toggleBreak("stop", "2");
+}
+
+void Calamari::_toggleBreak(String type, String breakId) {
+  String endpoint = "clockin/terminal/v1/break-" + type;
+  String payload = "{\"person\": \"" + Calamari::_employee 
+    + "\", \"time\": \"" + Helper::getCurrentTime() 
+    + "\", \"breakType\": \"" + breakId + "\"}";
+
+  Calamari::_apiCall(endpoint, payload);
+}
+
+bool Calamari::breakIsOn() {
+  return Calamari::_getShiftStatus() == "BREAK";
+}
+
+String Calamari::_getShiftStatus() {
   String endpoint = "clockin/shift/status/v1/get-current";
-  String payload = "{\"person\": \"" + email + "\"}";
+  String payload = "{\"person\": \"" + Calamari::_employee  + "\"}";
 
   String response = Calamari::_apiCall(endpoint, payload);
   JSONVar myObject = JSON.parse(response);
   String shiftStatus = (const char*) myObject["status"];
 
-  return shiftStatus == "STARTED";
+  return shiftStatus;
 }
 
 String Calamari::_apiCall(String endpoint, String payload) {

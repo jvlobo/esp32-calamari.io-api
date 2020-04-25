@@ -10,18 +10,23 @@
 
 class Calamari {
   public:
-    Calamari(String baseUrl, String use, String password);
-    String getBaseURL();
-    void startShift(String email);
-    void stopShift(String email);
-    bool shiftIsOn(String email);
+    Calamari(String baseUrl, String use, String password, String employee);
+    void startShift();
+    void stopShift();
+    bool shiftIsOn();
+    void startLunchBreak();
+    void stopLunchBreak();
+    bool breakIsOn();
   private:
     String _baseUrl;
     String _user;
     String _password;
+    String _employee;
 
     String _apiCall(String endpoint, String payload = "");
-    void _toggleShift(String email, String type);
+    void _toggleShift(String type);
+    void _toggleBreak(String type, String breakId);
+    String _getShiftStatus();
 };
 
 #endif
